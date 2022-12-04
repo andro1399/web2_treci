@@ -12,6 +12,7 @@
 		<script>
 		var myGamePiece = [];
 		var rect_num = getRandomIntInclusive(2, 6);
+		var hit_num = 0;
 		
 		function getRandomIntInclusive(min, max) {
 			min = Math.ceil(min);
@@ -119,18 +120,38 @@
 				this.y -= this.speed_y;
 			}
 		}
+
+		(function() {
+
+		})();
 		
 		function updateGameArea() {
 			myGameArea.clear();
 			var c = document.getElementById("myGameCanvas");
+    		var	cLeft = c.offsetLeft + c.clientLeft,
+    			cTop = c.offsetTop + c.clientTop;
 			var ctx = c.getContext("2d");
+			c.addEventListener('click', function(event) {
+				var mouse_x = event.pageX - cLeft;
+				var mouse_y = event.pageY - cTop;
+
+				myGamePiece.forEach(function(element) {
+					if ((mouse_y > (element.y - (element.height / 2))) && (mouse_y < (element.y + (element.height / 2))) && (mouse_x > (element.x - (element.width / 2))) && (mouse_x < (element.x + (element.width / 2)))) {
+						var index = myGamePiece.indexOf(element);
+						hit_num++;
+						if (index != -1) {
+							myGamePiece.splice(index, 1);
+						}
+					}
+				});
+			}, false);
 			myGamePiece.forEach(function(element) {
 				element.newPos();
 				element.update();
 			});
 			ctx.textAlign = "right";
 			let text = "Genrirano: " + rect_num.toString();
-			let text2 = "Pogođeno: " ;
+			let text2 = "Pogođeno: " + hit_num.toString();
 			ctx.fillText(text, 475, 10);
 			ctx.fillText(text2, 475, 20);
 		}
